@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import fftpack
 
-def TurbField(res=32, kmin=2, maxmode = 64, sol_weight=1., seed=42):
+def TurbField(res=64, kmin=2, maxmode = 64, sol_weight=1., seed=42):
     freqs = fftpack.fftfreq(res)
     freq3d = np.array(np.meshgrid(freqs,freqs,freqs,indexing='ij'))
     intfreq = np.around(freq3d*res)
@@ -45,8 +45,8 @@ kmin = 2
 turb_sol = 0.5
 seed = 55
 
-fname = "vturb%d_sol%g_seed%d.npy"%(kmin,turb_sol, seed)
-fname_v = "vturb%d_sol%g_seed%d.bin"%(kmin,turb_sol, seed)
+#fname = "vturb%d_sol%g_seed%d.npy"%(kmin,turb_sol, seed) # currently not needed
+#fname_v = "vturb%d_sol%g_seed%d.bin"%(kmin,turb_sol, seed) # currently not needed
 
 fname_vx = "vx.bin"
 fname_vy = "vy.bin"
@@ -59,14 +59,14 @@ nmin, nmax = vt.shape[-1]// 4, 3*vt.shape[-1]//4
 vt = vt[:, nmin:nmax, nmin:nmax, nmin:nmax]  # we take the central cube of size L/2 so that opposide sides of the cloud are not correlated
 print(vt.shape)
 
-vt.T.tofile(fname_v)
+#vt.T.tofile(fname_v) # currently not needed
 vtx = vt[0, :, :, :]
 vty = vt[1, :, :, :]
 vtz = vt[2, :, :, :]
 vtx.T.tofile(fname_vx)
 vty.T.tofile(fname_vy)
 vtz.T.tofile(fname_vz)
-np.save(fname, vt)
+#np.save(fname, vt) # currently not needed
 
 print(nmin, nmax) 
 print(vt.shape)
