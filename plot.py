@@ -1,11 +1,15 @@
+#!/usr/bin/env python3
+
+## This script will make and plot a turbulent field for illustration.
+
 import numpy as np
 from scipy import fftpack
 import matplotlib.pyplot as plt
 
-def TurbField(res=32, kmin=2, maxmode=64, sol_weight=1., seed=42):
-    freqs = fftpack.fftfreq(res)
+def TurbField(N=32, kmin=2, maxmode=64, sol_weight=0.5, seed=42):
+    freqs = fftpack.fftfreq(N)
     freq3d = np.array(np.meshgrid(freqs,freqs,freqs,indexing='ij'))
-    intfreq = np.around(freq3d*res)
+    intfreq = np.around(freq3d*N)
     kSqr = np.sum(np.abs(freq3d)**2,axis=0)
     intkSqr = np.sum(np.abs(intfreq)**2, axis=0)
     VK = []
@@ -14,7 +18,7 @@ def TurbField(res=32, kmin=2, maxmode=64, sol_weight=1., seed=42):
     for i in range(3):
         np.random.seed(seed+i)
         rand_phase = fftpack.fftn(np.random.normal(size=kSqr.shape)) # fourier transform of white noise
-        vk = rand_phase * (float(kmin)/res)**2 / (kSqr+1e-300)
+        vk = rand_phase * (float(kmin)/N)**2 / (kSqr+1e-300)
         #vk[intkSqr < kmin**2] = 0.0     # freeze out modes lower than kmin
 #        print(intkSqr[intkSqr < kmin**2])
         vk[intkSqr==0] = 0.0
@@ -42,10 +46,11 @@ def TurbField(res=32, kmin=2, maxmode=64, sol_weight=1., seed=42):
     return np.array(vel)
 
 
-kmin = 8 # lambda(max)
-turb_sol = 0.5
-seed = 55
-res = 128
+kmin = 2 # lambda_max, minimum populated turbulent wavenumber for Gaussian initial velocity field, in units of pi/R [default: 2]
+turb_sol = 0.5 # fraction of turbulence in solenoidal modes [default: 0.5]
+seed = 401
+res = 64
+N = 2*res # N is 2x cube resolution. E.g. N = 128 means a 64^3 velocity cube.
 
 fname = "vturb%d_sol%g_seed%d.npy"%(kmin,turb_sol, seed)
 fname_v = "vturb%d_sol%g_seed%d.bin"%(kmin,turb_sol, seed)
@@ -54,7 +59,7 @@ fname_vx = "vx.bin"
 fname_vy = "vy.bin"
 fname_vz = "vz.bin"
 
-vt = TurbField(res=res, kmin=kmin, sol_weight=turb_sol, seed=seed)
+vt = TurbField(N=N, kmin=kmin, sol_weight=turb_sol, seed=seed)
 print(vt.shape)
 nmin, nmax = vt.shape[-1]// 4, 3*vt.shape[-1]//4
 
@@ -76,8 +81,8 @@ print(vtx.shape)
 print(vtx.size)
 print("===================")
 # print(vtx[:,:])
-aa = np.linspace(-1, 1, res//2)
-x,y = np.meshgrid(np.linspace(-1, 1, res//2), np.linspace(-1, 1, res//2))
+aa = np.linspace(-1, 1, N//2)
+x,y = np.meshgrid(np.linspace(-1, 1, N//2), np.linspace(-1, 1, N//2))
 #z = x*np.exp(-x**2 - y**2)
 #v, u = np.gradient(z, .2, .2)
 plt.quiver(x,y,vtx,vty)
