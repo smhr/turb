@@ -1,4 +1,4 @@
-      program read_unformatted_binary_from_python
+      program read_python_binary_fromat
       use iso_c_binding
       implicit none
 
