@@ -19,3 +19,10 @@ gfortran ./convert_python_cube.f90 -o ./convert_python_cube.exe
 ```
 
 This will make three velocity cubes `cube_v1.dat, cube_v2.dat, cube_v3.dat` that can be used as `phantom` input. Just copy them in `phantom/data/velfield` directory.
+
+## How to plot turbulent velocity field
+
+```sh
+cd test
+python3 ./plot_v_field.py
+```
